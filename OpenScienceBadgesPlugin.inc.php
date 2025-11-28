@@ -11,6 +11,20 @@ class OpenScienceBadgesPlugin extends GenericPlugin
     public const BADGE_MATERIALS = 'materials';
     public const BADGE_PREREGISTERED = 'preregistered';
     public const BADGE_PREREGISTERED_PLUS = 'preregisteredplus';
+    public const SIZE_LARGE = 'large';
+    public const SIZE_SMALL = 'small';
+    public const COLOR_COLOR = 'color';
+    public const COLOR_GRAY = 'gray';
+    public const LOCATION_NONE = 'none';
+    public const LOCATION_DETAILS = 'details';
+    public const LOCATION_MAIN = 'main';
+    public const SETTING_SIZE = 'size';
+    public const SETTING_COLOR = 'color';
+    public const SETTING_LOCATION = 'location';
+
+    public const DEFAULT_SIZE = self::SIZE_SMALL;
+    public const DEFAULT_COLOR = self::COLOR_GRAY;
+    public const DEFAULT_LOCATION = self::LOCATION_DETAILS;
 
     public const BADGES = [
         self::BADGE_DATA,
@@ -18,12 +32,19 @@ class OpenScienceBadgesPlugin extends GenericPlugin
         self::BADGE_PREREGISTERED,
         self::BADGE_PREREGISTERED_PLUS,
     ];
-
-    public const SIZE_LARGE = 'large';
-    public const SIZE_SMALL = 'small';
-
-    public const COLOR_COLOR = 'color';
-    public const COLOR_GRAY = 'gray';
+    public const SIZES = [
+        self::SIZE_LARGE,
+        self::SIZE_SMALL,
+    ];
+    public const COLORS = [
+        self::COLOR_COLOR,
+        self::COLOR_GRAY,
+    ];
+    public const LOCATIONS = [
+        self::LOCATION_NONE,
+        self::LOCATION_DETAILS,
+        self::LOCATION_MAIN,
+    ];
 
     public function getDisplayName()
     {
@@ -56,6 +77,70 @@ class OpenScienceBadgesPlugin extends GenericPlugin
 
         return true;
     }
+
+    /**
+     * Handle requests for the settings form
+     */
+    public function manage($args, $request)
+    {
+        $this->import('OpenScienceBadgesSettingsForm');
+        $settingsForm = new OpenScienceBadgesSettingsForm($this);
+        switch($request->getUserVar('verb')) {
+            case 'settings':
+                $settingsForm->initData();
+                return new JSONMessage(true, $settingsForm->fetch($request));
+            case 'save':
+                $settingsForm->readInputData();
+                if ($settingsForm->validate()) {
+                    $settingsForm->execute();
+                    $notificationManager = new NotificationManager();
+                    $notificationManager->createTrivialNotification(
+                        $request->getUser()->getId(),
+                        NOTIFICATION_TYPE_SUCCESS,
+                        array('contents' => __('plugins.generic.openScienceBadges.settings.saved'))
+                    );
+                    return new JSONMessage(true);
+                }
+                return new JSONMessage(true, $settingsForm->fetch($request));
+        }
+        return parent::manage($args, $request);
+    }
+
+    /**
+     * Add settings link to plugin table
+     */
+    public function getActions($request, $verb)
+    {
+        if (!$this->getEnabled()) {
+            return parent::getActions($request, $verb);
+        }
+
+        import('lib.pkp.classes.linkAction.request.AjaxModal');
+
+        return array_merge([
+            new LinkAction(
+                'settings',
+                new AjaxModal(
+                    $request->getRouter()->url(
+                        $request,
+                        null,
+                        null,
+                        'manage',
+                        null,
+                        [
+                            'verb' => 'settings',
+                            'plugin' => $this->getName(),
+                            'category' => 'generic',
+                        ]
+                    ),
+                    $this->getDisplayName()
+                ),
+                __('manager.plugins.settings'),
+                null
+            ),
+        ], parent::getActions($request, $verb));
+    }
+
 
     /**
      * Extend the publication entity schema to add properties for
@@ -200,7 +285,7 @@ class OpenScienceBadgesPlugin extends GenericPlugin
     /**
      * Get the URL to the plugin's root directory
      */
-    protected function getPluginUrl(): string
+    public function getPluginUrl(): string
     {
         $request = Application::get()->getRequest();
         $baseUrl = rtrim($request->getBaseUrl(), '/');
