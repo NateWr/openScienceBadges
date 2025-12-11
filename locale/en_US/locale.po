@@ -7,17 +7,11 @@ msgstr "Assign and display the Open Science Badges created by the Center for Ope
 msgid "plugins.generic.openScienceBadges.data"
 msgstr "Open Data"
 
-msgid "plugins.generic.openScienceBadges.data.alt"
-msgstr "The Open Data badge indicating that the authors have met the disclosure criteria for open research data."
-
 msgid "plugins.generic.openScienceBadges.data.desc"
 msgstr "An optional disclosure statement describing how this publication meets the disclosure criteria for open research data. <a href=\"{$url}\" target=\"_blank\">Learn more</a>"
 
 msgid "plugins.generic.openScienceBadges.materials"
 msgstr "Open Materials"
-
-msgid "plugins.generic.openScienceBadges.materials.alt"
-msgstr "The Open Materials badge indicating that the authors have met the disclosure criteria for open research material."
 
 msgid "plugins.generic.openScienceBadges.materials.desc"
 msgstr "An optional disclosure statement describing how this publication meets the disclosure criteria for open research materials. <a href=\"{$url}\" target=\"_blank\">Learn more</a>"
@@ -25,17 +19,11 @@ msgstr "An optional disclosure statement describing how this publication meets t
 msgid "plugins.generic.openScienceBadges.preregistered"
 msgstr "Preregistered"
 
-msgid "plugins.generic.openScienceBadges.preregistered.alt"
-msgstr "The Preregistered badge indicating that the authors have preregistered the research plan."
-
 msgid "plugins.generic.openScienceBadges.preregistered.desc"
 msgstr "An optional disclosure statement describing how the authors met the criteria for a preregistered research plan. <a href=\"{$url}\" target=\"_blank\">Learn more</a>"
 
 msgid "plugins.generic.openScienceBadges.preregisteredplus"
 msgstr "Preregistered Plus"
-
-msgid "plugins.generic.openScienceBadges.preregisteredplus.alt"
-msgstr "The Preregistered Plus badge indicating that the authors have preregistered the research plan and published an analysis of any changes to this plan."
 
 msgid "plugins.generic.openScienceBadges.preregisteredplus.desc"
 msgstr "An optional disclosure statement describing how the authors met the criteria for a preregistered research plan and an analysis of any changes to this plan. <a href=\"{$url}\" target=\"_blank\">Learn more</a>"
@@ -71,7 +59,7 @@ msgid "plugins.generic.openScienceBadges.settings.location"
 msgstr "Show Badges"
 
 msgid "plugins.generic.openScienceBadges.settings.location.desc"
-msgstr "Choose where to show the badges on the article landing page. For most themes, the plugin can automatically add the badges to the sidebar (Article Details) or below the abstract (Article Main). Some themes may add the badges directly. If that's the case, select None to preven the plugin from automatically adding the badges to the page."
+msgstr "Choose where to show the badges on the article landing page. For most themes, the plugin can automatically add the badges to the sidebar (Article Details) or below the abstract (Article Main). Some themes may add the badges directly. If that's the case, select None to prevent the plugin from automatically adding the badges to the page."
 
 msgid "plugins.generic.openScienceBadges.settings.location.details"
 msgstr "Article Details Section (usually in the sidebar)"

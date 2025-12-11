@@ -307,8 +307,7 @@ class OpenScienceBadgesPlugin extends GenericPlugin
         $badges = [];
         foreach (self::BADGES as $badge) {
             $badges[] = [
-                'name' => __("plugins.generic.openScienceBadges.badgeTitleFormat", ['title' => __("plugins.generic.openScienceBadges.{$badge}")]),
-                'alt' => __("plugins.generic.openScienceBadges.{$badge}.alt"),
+                'name' => __('plugins.generic.openScienceBadges.' . $badge),
                 'desc' => $publication->getLocalizedData($this->getPropName($badge)),
                 'url' => $this->getPluginUrl() . "/images/{$badge}_{$size}_{$color}.png",
             ];

@@ -2,7 +2,7 @@
   <div class="opensciencebadges-lg-badges">
     {foreach from=$osbBadges item="badge"}
       {if $badge.desc|@trim}
-        <img src="{$badge.url}" alt="{$badge.alt|escape|default:""}" />
+        <img src="{$badge.url}" alt="" />
       {/if}
     {/foreach}
   </div>
@@ -10,7 +10,9 @@
     {foreach from=$osbBadges item="badge"}
       {if $badge.desc|@trim}
         <p class="opensciencebadge-desc">
-          <strong class="opensciencebadge-label">{$badge.name}</strong>
+          <strong class="opensciencebadge-label">
+            {translate key="plugins.generic.openScienceBadges.badgeTitleFormat" title=$badge.name}
+          </strong>
           {$badge.desc|strip_unsafe_html}
         </p>
       {/if}
