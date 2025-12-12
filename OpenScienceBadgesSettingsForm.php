@@ -1,5 +1,12 @@
 <?php
-import('lib.pkp.classes.form.Form');
+namespace APP\plugins\generic\openScienceBadges;
+
+use APP\core\Application;
+use APP\template\TemplateManager;
+use PKP\form\Form;
+use PKP\form\validation\FormValidatorCSRF;
+use PKP\form\validation\FormValidatorCustom;
+use PKP\form\validation\FormValidatorPost;
 
 class OpenScienceBadgesSettingsForm extends Form {
 

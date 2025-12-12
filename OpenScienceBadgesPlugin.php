@@ -1,9 +1,22 @@
 <?php
+namespace APP\plugins\generic\openScienceBadges;
 
+use APP\core\Application;
+use APP\notification\Notification;
+use APP\notification\NotificationManager;
+use APP\publication\Publication;
+use APP\template\TemplateManager;
+use PKP\components\forms\FieldRichText;
 use PKP\components\forms\FieldText;
 use PKP\components\forms\FormComponent;
-
-import('lib.pkp.classes.plugins.GenericPlugin');
+use PKP\components\forms\publication\PKPMetadataForm;
+use PKP\context\Context;
+use PKP\core\JSONMessage;
+use PKP\handler\APIHandler;
+use PKP\linkAction\LinkAction;
+use PKP\linkAction\request\AjaxModal;
+use PKP\plugins\GenericPlugin;
+use PKP\plugins\Hook;
 
 class OpenScienceBadgesPlugin extends GenericPlugin
 {
@@ -61,10 +74,10 @@ class OpenScienceBadgesPlugin extends GenericPlugin
         if (!parent::register($category, $path, $mainContextId)) {
             return false;
         }
-        HookRegistry::register('Schema::get::publication', [$this, 'addToPublicationSchema']);
-        HookRegistry::register('Form::config::before', [$this, 'addToPublicationMetadataForm']);
-        HookRegistry::register('Templates::Article::Details', [$this, 'addToArticle']);
-        HookRegistry::register('Templates::Article::Main', [$this, 'addToArticle']);
+        Hook::add('Schema::get::publication', [$this, 'addToPublicationSchema']);
+        Hook::add('Form::config::before', [$this, 'addToPublicationMetadataForm']);
+        Hook::add('Templates::Article::Details', [$this, 'addToArticle']);
+        Hook::add('Templates::Article::Main', [$this, 'addToArticle']);
 
         $templateMgr = TemplateManager::getManager(Application::get()->getRequest());
         $templateMgr->addStyleSheet(
@@ -83,7 +96,6 @@ class OpenScienceBadgesPlugin extends GenericPlugin
      */
     public function manage($args, $request)
     {
-        $this->import('OpenScienceBadgesSettingsForm');
         $settingsForm = new OpenScienceBadgesSettingsForm($this);
         switch($request->getUserVar('verb')) {
             case 'settings':
@@ -96,7 +108,7 @@ class OpenScienceBadgesPlugin extends GenericPlugin
                     $notificationManager = new NotificationManager();
                     $notificationManager->createTrivialNotification(
                         $request->getUser()->getId(),
-                        NOTIFICATION_TYPE_SUCCESS,
+                        Notification::NOTIFICATION_TYPE_SUCCESS,
                         array('contents' => __('plugins.generic.openScienceBadges.settings.saved'))
                     );
                     return new JSONMessage(true);
@@ -114,8 +126,6 @@ class OpenScienceBadgesPlugin extends GenericPlugin
         if (!$this->getEnabled()) {
             return parent::getActions($request, $verb);
         }
-
-        import('lib.pkp.classes.linkAction.request.AjaxModal');
 
         return array_merge([
             new LinkAction(
@@ -168,32 +178,26 @@ class OpenScienceBadgesPlugin extends GenericPlugin
      */
     public function addToPublicationMetadataForm(string $hookName, FormComponent $form): bool
     {
-        if (!defined('FORM_METADATA') || $form->id !== FORM_METADATA) {
+        if ($form->id !== PKPMetadataForm::FORM_METADATA) {
             return false;
         }
+        /** @var PKPMetadataForm $form */
 
         $context = Application::get()->getRequest()->getContext();
         if (!$context) {
             return false;
         }
 
-        $submission = Application::get()->getRequest()->getRouter()->getHandler()->getAuthorizedContextObject(ASSOC_TYPE_SUBMISSION);
-        if (!$submission) {
-            return false;
-        }
-
-
         foreach (self::BADGES as $badge) {
             $form->addField(
-                new FieldText($this->getPropName($badge), [
+                new FieldRichText($this->getPropName($badge), [
                     'label' => __("plugins.generic.openScienceBadges.{$badge}"),
                     'tooltip' =>  __(
                         "plugins.generic.openScienceBadges.{$badge}.desc",
                         ['url' => 'https://www.cos.io/initiatives/badges']
                     ),
                     'isMultilingual' => true,
-                    'size' => 'large',
-                    'value' => $submission->getCurrentPublication()->getData($this->getPropName($badge)),
+                    'value' => $form->publication->getData($this->getPropName($badge)),
                 ])
             );
         }
@@ -220,7 +224,7 @@ class OpenScienceBadgesPlugin extends GenericPlugin
         $output =& $args[2];
 
         $templateMgr = TemplateManager::getManager(Application::get()->getRequest());
-        $publication = $templateMgr->get_template_vars('publication');
+        $publication = $templateMgr->getTemplateVars('publication');
 
         if (!$this->publicationHasBadges($publication)) {
             return false;
